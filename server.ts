@@ -60,6 +60,31 @@ app.prepare().then(() => {
       io.to(socket.id).emit('users-list', users);
     });
 
+    // WebRTC Signaling
+    socket.on('offer', ({ offer, to }) => {
+      console.log('Relaying offer from', socket.id, 'to', to);
+      socket.to(to).emit('offer', {
+        offer,
+        from: socket.id,
+      });
+    });
+
+    socket.on('answer', ({ answer, to }) => {
+      console.log('Relaying answer from', socket.id, 'to', to);
+      socket.to(to).emit('answer', {
+        answer,
+        from: socket.id,
+      });
+    });
+
+    socket.on('ice-candidate', ({ candidate, to }) => {
+      console.log('Relaying ICE candidate from', socket.id, 'to', to);
+      socket.to(to).emit('ice-candidate', {
+        candidate,
+        from: socket.id,
+      });
+    });
+
     socket.on('toggle-mic', (enabled) => {
       const user = connectedUsers.get(socket.id);
       if (user) {
